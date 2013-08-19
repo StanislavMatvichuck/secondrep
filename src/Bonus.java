@@ -15,8 +15,10 @@ public class Bonus {
 	}
 
 	public void render(Graphics g) {
-		g.setColor(new Color(0, 213, 255));
+		g.setColor(new Color(0, 172, 206));
 		g.fillRect(posx, posy, 20, 20);
-	}
 
+		g.setColor(new Color(0, 213, 255));
+		g.fillOval(posx + 3, posy + 3, 12, 12);
+	}
 }

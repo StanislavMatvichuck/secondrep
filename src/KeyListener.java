@@ -7,6 +7,7 @@ public class KeyListener extends KeyAdapter {
 	public static boolean firePressed = false;
 	public static boolean fireDisabled = false;
 	public static boolean enterPressed = false;
+	public static boolean bonusPressed = false;
 
 	public void keyPressed(KeyEvent e) {
 		if ((e.getKeyCode() == KeyEvent.VK_A)
@@ -22,6 +23,9 @@ public class KeyListener extends KeyAdapter {
 
 		if (e.getKeyCode() == KeyEvent.VK_ENTER)
 			enterPressed = true;
+
+		if (e.getKeyCode() == KeyEvent.VK_DOWN)
+			bonusPressed = true;
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -37,5 +41,8 @@ public class KeyListener extends KeyAdapter {
 			firePressed = false;
 			fireDisabled = false;
 		}
+
+		if (e.getKeyCode() == KeyEvent.VK_DOWN)
+			bonusPressed = false;
 	}
 }

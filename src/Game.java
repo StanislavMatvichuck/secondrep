@@ -19,11 +19,12 @@ public class Game extends Canvas implements Runnable {
 	private ArrayList<Bonus> bonuses = new ArrayList<Bonus>();
 	private int score;
 	private int lastscore;
-	private int level;
+	private int level = 15;
 	private boolean gameOver = false;
 
-	private int fastCannon = 0;
+	private int fastCannon;
 	private int playerSpeed = 1;
+	private int capturedBonuses;
 
 	private int wallMoveTimer;
 	private int wallGenTimer;
@@ -64,22 +65,31 @@ public class Game extends Canvas implements Runnable {
 			return; // if game is over - do nothing
 		}
 		if (KeyListener.leftPressed)
-			player.posx-= playerSpeed; // left
+			player.posx -= playerSpeed; // left
 		if (KeyListener.rightPressed)
-			player.posx+=playerSpeed; // right
+			player.posx += playerSpeed; // right
 
 		if ((KeyListener.firePressed) && (KeyListener.fireDisabled == false)) { // fire
 
 			bullets.add(new Bullet(player.posx + 10, 360)); // add bullet
 
-			if (fastCannon < 0){
+			if (fastCannon < 0) {
 				KeyListener.fireDisabled = true; // block SPACE
 			} else {
 				KeyListener.fireDisabled = false;
 			}
 		}
+		
+		if(KeyListener.bonusPressed){
+			KeyListener.bonusPressed = false; // deatcivate button
+			if(capturedBonuses>0){
+				fastCannon+=70; // enable bonus( time coefficient here)
+				capturedBonuses--; // decrease amount of captured bonuses
+			}
+		}
+		
 		for (int i = 0; i < bullets.size(); i++) {
-			bullets.get(i).posy -= 4; // bullets moving
+			bullets.get(i).posy -= 3; // bullets moving ( speed coefficient here )
 
 			if (bullets.get(i).posy < -10)
 				bullets.remove(i); // flew away bullets deleting
@@ -102,7 +112,7 @@ public class Game extends Canvas implements Runnable {
 			wallGenTimer--;
 			// end walls generation
 
-			wallMoveTimer = 10 - level;
+			wallMoveTimer = level;
 		}
 		wallMoveTimer--;
 		// end walls moving
@@ -135,20 +145,34 @@ public class Game extends Canvas implements Runnable {
 			}
 		}
 		// levels
-		if (score >= 5)
-			level = 1;
-		if (score >= 120)
-			level = 2;
-		if (score >= 200)
-			level = 3;
-		if (score >= 350)
-			level = 4;
+		if (score >= 20)
+			level = 14;
+		if (score >= 50)
+			level = 13;
+		if (score >= 100)
+			level = 12;
+		if (score >= 250)
+			level = 11;
 		if (score >= 500)
-			level = 5;
+			level = 10;
 		if (score >= 650)
-			level = 6;
+			level = 9;
 		if (score >= 700)
+			level = 8;
+		if (score >= 1000)
 			level = 7;
+		if (score >= 1200)
+			level = 6;
+		if (score >= 1500)
+			level = 5;
+		if (score >= 1800)
+			level = 4;
+		if (score >= 2200)
+			level = 3;
+		if (score >= 2800)
+			level = 2;
+		if (score >= 4000)
+			level = 1;
 
 		for (int i = 0; i < bonuses.size(); i++) {
 			bonuses.get(i).update(); // bonuses moving
@@ -156,14 +180,18 @@ public class Game extends Canvas implements Runnable {
 			if (bonuses.get(i).posy > 350) {
 				if ((player.posx < bonuses.get(i).posx + 20)
 						&& (player.posx + 30 > bonuses.get(i).posx)) {
-					fastCannon = 100; // enable fast cannon
+					capturedBonuses++; // add one to player's pocket
 					bonuses.remove(i); // delete bonus
 				}
 			}
 		}
+		
 		fastCannon--;
-		if(fastCannon > 0){
-			playerSpeed = 3;
+		if (fastCannon < -1) {
+			fastCannon = -1;
+		}
+		if (fastCannon > 0) {
+			playerSpeed = 2;
 		} else {
 			playerSpeed = 1;
 		}
@@ -190,10 +218,11 @@ public class Game extends Canvas implements Runnable {
 
 		g.setColor(new Color(240, 240, 240));
 		g.drawString("Score is " + score, 5, 420); // score draw
-		g.drawString("Level " + level, 255, 420); // level draw
+		g.drawString("Level " + (15 - level), 255, 420); // level draw
+		g.drawString("Speedups " + capturedBonuses, 90, 420); // bonuses in pocket
 
 		g.setColor(new Color(100, 100, 100));
-		g.drawString("High " + lastscore, 200, 420); // best score draw
+		g.drawString("High " + lastscore, 185, 420); // best score draw
 
 		player.render(g); // player render
 
@@ -232,11 +261,16 @@ public class Game extends Canvas implements Runnable {
 			level = 0; // clean
 			wallGenTimer = 0; // clean
 			wallMoveTimer = 0; // clean
+			fastCannon = 0;
+			capturedBonuses = 0;
 			for (int i = 0; i < bullets.size(); i++) {
-				bullets.remove(i); // clean
+				bullets.remove(i); // clean bullets
 			}
 			for (int i = 0; i < walls.size(); i++) {
-				walls.remove(i); // clean
+				walls.remove(i); // clean walls
+			}
+			for(int i=0; i<bonuses.size();i++){
+				bonuses.remove(i); // clean bonuses
 			}
 			player.posx = 135; // player posx clean
 

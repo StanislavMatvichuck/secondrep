@@ -16,10 +16,14 @@ public class Game extends Canvas implements Runnable {
 	private KeyListener button = new KeyListener();
 	private ArrayList<Bullet> bullets = new ArrayList<Bullet>();
 	private ArrayList<Wall> walls = new ArrayList<Wall>();
+	private ArrayList<Bonus> bonuses = new ArrayList<Bonus>();
 	private int score;
 	private int lastscore;
 	private int level;
 	private boolean gameOver = false;
+
+	private int fastCannon = 0;
+	private int playerSpeed = 1;
 
 	private int wallMoveTimer;
 	private int wallGenTimer;
@@ -57,18 +61,22 @@ public class Game extends Canvas implements Runnable {
 	public void update() {
 
 		if (gameOver == true) {
-			return;
+			return; // if game is over - do nothing
 		}
 		if (KeyListener.leftPressed)
-			player.posx--; // left
+			player.posx-= playerSpeed; // left
 		if (KeyListener.rightPressed)
-			player.posx++; // right
+			player.posx+=playerSpeed; // right
 
-		if ((KeyListener.firePressed) && (KeyListener.fireDisabled == false)) { // огонь
+		if ((KeyListener.firePressed) && (KeyListener.fireDisabled == false)) { // fire
 
 			bullets.add(new Bullet(player.posx + 10, 360)); // add bullet
 
-			KeyListener.fireDisabled = true; // block SPACE
+			if (fastCannon < 0){
+				KeyListener.fireDisabled = true; // block SPACE
+			} else {
+				KeyListener.fireDisabled = false;
+			}
 		}
 		for (int i = 0; i < bullets.size(); i++) {
 			bullets.get(i).posy -= 4; // bullets moving
@@ -106,11 +114,19 @@ public class Game extends Canvas implements Runnable {
 				if (bullets.get(b).posx < walls.get(w).posx + 30) {
 					if (bullets.get(b).posx + 10 > walls.get(w).posx) {
 						if (bullets.get(b).posy <= walls.get(w).posy + 30) {
+
+							if (Math.random() > 0.98) {
+								bonuses.add(new Bonus(walls.get(w).posx + 5,
+										walls.get(w).posy + 5));
+							} // gererate bonus
+
 							walls.remove(w); // delete wall
 							bullets.remove(b); // delete bullet
 							score++; // score increment
+
 							if (score > lastscore)
 								lastscore = score; // set max score
+
 							break;
 						}
 					}
@@ -134,6 +150,23 @@ public class Game extends Canvas implements Runnable {
 		if (score >= 700)
 			level = 7;
 
+		for (int i = 0; i < bonuses.size(); i++) {
+			bonuses.get(i).update(); // bonuses moving
+
+			if (bonuses.get(i).posy > 350) {
+				if ((player.posx < bonuses.get(i).posx + 20)
+						&& (player.posx + 30 > bonuses.get(i).posx)) {
+					fastCannon = 100; // enable fast cannon
+					bonuses.remove(i); // delete bonus
+				}
+			}
+		}
+		fastCannon--;
+		if(fastCannon > 0){
+			playerSpeed = 3;
+		} else {
+			playerSpeed = 1;
+		}
 	}
 
 	public void render() {
@@ -169,6 +202,10 @@ public class Game extends Canvas implements Runnable {
 		}
 		for (int i = 0; i < walls.size(); i++) {
 			walls.get(i).render(g); // walls render
+		}
+
+		for (int i = 0; i < bonuses.size(); i++) {
+			bonuses.get(i).render(g);
 		}
 
 		if (gameOver) { // if game is over!

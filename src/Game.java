@@ -25,11 +25,11 @@ public class Game extends Canvas implements Runnable {
 	private int wallGenTimer;
 
 	public void game() {
-		Dimension size = new Dimension(300, 430); // размеры
+		Dimension size = new Dimension(300, 430); // dimensions
 		setMinimumSize(size);
 		setPreferredSize(size);
 		setMaximumSize(size);
-		addKeyListener(button); // считывание клавиш
+		addKeyListener(button); // key listening
 	}
 
 	public void run() {
@@ -60,28 +60,31 @@ public class Game extends Canvas implements Runnable {
 			return;
 		}
 		if (KeyListener.leftPressed)
-			player.posx--; // влево
+			player.posx--; // left
 		if (KeyListener.rightPressed)
-			player.posx++; // вправо
+			player.posx++; // right
+
 		if ((KeyListener.firePressed) && (KeyListener.fireDisabled == false)) { // огонь
-			bullets.add(new Bullet(player.posx + 10, 360)); // добавить снаряд
-			KeyListener.fireDisabled = true; // заблокировать пушку
+
+			bullets.add(new Bullet(player.posx + 10, 360)); // add bullet
+
+			KeyListener.fireDisabled = true; // block SPACE
 		}
 		for (int i = 0; i < bullets.size(); i++) {
-			bullets.get(i).posy -= 4; // движение снярядов
+			bullets.get(i).posy -= 4; // bullets moving
 
 			if (bullets.get(i).posy < -10)
-				bullets.remove(i); // удаление вылетевшего сняряда
+				bullets.remove(i); // flew away bullets deleting
 		}
 
-		// движение стен
+		// walls moving
 		if (wallMoveTimer == 0) {
 			for (int i = 0; i < walls.size(); i++) {
-				walls.get(i).posy++; // передвижение стен на 1 вниз
+				walls.get(i).posy++; // walls move by 1 px
 				if (walls.get(i).posy >= 340)
-					gameOver = true; // условие проигрыша
+					gameOver = true; // game over rule
 			}
-			// генерация стен
+			// walls generation
 			if (wallGenTimer == 0) {
 				for (int i = 0; i < 10; i++) {
 					walls.add(new Wall(i * 30, -30));
@@ -89,26 +92,25 @@ public class Game extends Canvas implements Runnable {
 				wallGenTimer = 30;
 			}
 			wallGenTimer--;
-			// !геренация стен
+			// end walls generation
 
 			wallMoveTimer = 10 - level;
 		}
 		wallMoveTimer--;
-		// !движение стен
+		// end walls moving
 
-		// уничтожение стен
+		// walls deleting
 
 		for (int b = 0; b < bullets.size(); b++) {
 			for (int w = 0; w < walls.size(); w++) {
 				if (bullets.get(b).posx < walls.get(w).posx + 30) {
 					if (bullets.get(b).posx + 10 > walls.get(w).posx) {
 						if (bullets.get(b).posy <= walls.get(w).posy + 30) {
-							walls.remove(w); // удаление стены
-							bullets.remove(b); // удаление снаряда
-							score++; // увеличение результата
+							walls.remove(w); // delete wall
+							bullets.remove(b); // delete bullet
+							score++; // score increment
 							if (score > lastscore)
-								lastscore = score; // присваивание максимального
-													// результата
+								lastscore = score; // set max score
 							break;
 						}
 					}
@@ -116,7 +118,7 @@ public class Game extends Canvas implements Runnable {
 
 			}
 		}
-		// увеличение уровня
+		// levels
 		if (score >= 5)
 			level = 1;
 		if (score >= 120)
@@ -144,64 +146,65 @@ public class Game extends Canvas implements Runnable {
 		Graphics g = b.getDrawGraphics();
 
 		g.setColor(new Color(160, 160, 160));
-		g.fillRect(0, 0, 300, 400); // фон
+		g.fillRect(0, 0, 300, 400); // bg
 
 		g.setColor(new Color(140, 140, 140));
-		g.fillRect(0, 400, 300, 30); // нижняя часть
+		g.fillRect(0, 400, 300, 30); // bottom
 		g.setColor(new Color(90, 90, 90));
-		g.drawLine(0, 400, 300, 400); // темная линия
+		g.drawLine(0, 400, 300, 400); // dark line
 		g.setColor(new Color(210, 210, 210));
-		g.drawLine(0, 401, 300, 401); // светлая линия
+		g.drawLine(0, 401, 300, 401); // bright line
 
 		g.setColor(new Color(240, 240, 240));
-		g.drawString("Score is " + score, 5, 420); // вывод счета
-		g.drawString("Level " + level, 255, 420); // вывод уровня
+		g.drawString("Score is " + score, 5, 420); // score draw
+		g.drawString("Level " + level, 255, 420); // level draw
 
 		g.setColor(new Color(100, 100, 100));
-		g.drawString("High " + lastscore, 200, 420); // лучший счет
+		g.drawString("High " + lastscore, 200, 420); // best score draw
 
-		player.render(g); // отображение игрока
+		player.render(g); // player render
 
 		for (int i = 0; i < bullets.size(); i++) {
-			bullets.get(i).render(g); // отображение снарядов
+			bullets.get(i).render(g); // bullets render
 		}
 		for (int i = 0; i < walls.size(); i++) {
-			walls.get(i).render(g); // отображение стен
+			walls.get(i).render(g); // walls render
 		}
 
-		if (gameOver) { // Если игра закончена!
+		if (gameOver) { // if game is over!
 			g.setColor(new Color(160, 160, 160));
-			g.fillRect(0, 0, 300, 400); // фон
+			g.fillRect(0, 0, 300, 400); // bg
 
 			g.setColor(new Color(140, 140, 140));
-			g.fillRect(0, 400, 300, 30); // нижняя часть
+			g.fillRect(0, 400, 300, 30); // bottom
 			g.setColor(new Color(90, 90, 90));
-			g.drawLine(0, 400, 300, 400); // темная линия
+			g.drawLine(0, 400, 300, 400); // dark line
 			g.setColor(new Color(210, 210, 210));
-			g.drawLine(0, 401, 300, 401); // светлая линия
+			g.drawLine(0, 401, 300, 401); // bright line
 
 			g.setColor(new Color(240, 240, 240));
-			g.drawString("Game over! Your high score is " + lastscore, 20, 420); // Когда
-																					// игра
-																					// окончена
+			g.drawString("Game over! Your high score is " + lastscore, 20, 420); // when
+																					// game
+																					// is
+																					// over
 
 			g.setColor(new Color(100, 100, 100));
 			g.drawString("Press Enter to retry", 20, 390);
 
-			score = 0; // обнуление
-			level = 0; // обнуление
-			wallGenTimer = 0; // обнуление
-			wallMoveTimer = 0; // обнуление
+			score = 0; // clean
+			level = 0; // clean
+			wallGenTimer = 0; // clean
+			wallMoveTimer = 0; // clean
 			for (int i = 0; i < bullets.size(); i++) {
-				bullets.remove(i); // обнуление
+				bullets.remove(i); // clean
 			}
 			for (int i = 0; i < walls.size(); i++) {
-				walls.remove(i); // обнуление
+				walls.remove(i); // clean
 			}
-			player.posx = 135; // исходная позиция игрока
+			player.posx = 135; // player posx clean
 
 			if (KeyListener.enterPressed) {
-				gameOver = false; // запуск новой игры
+				gameOver = false; // new game start
 				KeyListener.enterPressed = false;
 			}
 

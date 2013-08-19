@@ -1,9 +1,7 @@
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Player extends Canvas {
-	private static final long serialVersionUID = 1L;
+public class Player {
 	
 	public int posx = 135;
 

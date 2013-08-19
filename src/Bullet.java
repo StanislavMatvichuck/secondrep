@@ -1,9 +1,8 @@
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Bullet extends Canvas {
-
+public class Bullet {
+	
 	public int posx;
 	public int posy;
 

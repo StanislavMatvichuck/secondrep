@@ -1,8 +1,7 @@
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Wall extends Canvas {
+public class Wall {
 	public int posx, posy;
 
 	public Wall(int x, int y) {
